@@ -1343,6 +1343,7 @@ let selectedTrip = null;
 let selectedSeat = null;
 let seatIsPremium = false;
 let chatOpen = true;
+let isManualFlowActive = false;
 
 const chatMessages = document.getElementById('chatMessages');
 
@@ -1498,6 +1499,7 @@ async function showAISuggestedFlow(btnEl) {
 let manualServices = [];
 
 async function showManualBookingFlow(btnEl) {
+  isManualFlowActive = true;
   if(btnEl) btnEl.parentNode.innerHTML = `<div style="font-size:13px; opacity:0.6; text-align:center;">Selected: Manual Build</div>`;
   addMsg('user', '🛠️ Build it manually');
   
@@ -1732,9 +1734,12 @@ async function askManualSeat() {
     sDiv.innerHTML = `<div class="msg-bubble">
       I noticed you prefer ${userPreferences.preferredType} seats on the ${userPreferences.preferredSide === 'A' ? 'left' : 'right'} side.<br><br>
       Should I secure <b>${pSeat.id}</b> for you on this flight?
-      <div style="display:flex; gap:8px; margin-top:12px">
-        <button onclick="confirmManualFixedSeat('${pSeat.id}', ${pSeat.isPremium}, this)" style="flex:1; background:#4ade80; color:#0f172a; border:none; border-radius:8px; padding:8px; font-weight:600; cursor:pointer;">Yes, lock it in</button>
-        <button onclick="addMsg('user', 'I will choose later.'); setTimeout(() => { triggerNextManualStep(); }, 400); this.parentNode.parentNode.style.opacity='0.5'; this.parentNode.style.pointerEvents='none';" style="flex:1; background:rgba(255,255,255,.1); color:#fff; border:none; border-radius:8px; padding:8px; font-weight:600; cursor:pointer;">Choose later</button>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px">
+        <button onclick="confirmManualFixedSeat('${pSeat.id}', ${pSeat.isPremium}, this)" style="background:#4ade80; color:#0f172a; border:none; border-radius:8px; padding:10px; font-weight:600; cursor:pointer;">Yes, lock it in</button>
+        <div style="display:flex; gap:8px;">
+          <button onclick="openSeatModal(); this.parentNode.parentNode.parentNode.style.opacity='0.5'; this.parentNode.parentNode.style.pointerEvents='none';" style="flex:1; background:var(--accent2); color:#fff; border:none; border-radius:8px; padding:8px; font-weight:600; cursor:pointer;">Select manually</button>
+          <button onclick="addMsg('user', 'I will choose later.'); setTimeout(() => { triggerNextManualStep(); }, 400); this.parentNode.parentNode.parentNode.style.opacity='0.5'; this.parentNode.parentNode.style.pointerEvents='none';" style="flex:1; background:rgba(255,255,255,.1); color:#fff; border:none; border-radius:8px; padding:8px; font-weight:600; cursor:pointer;">Choose later</button>
+        </div>
       </div>
     </div>`;
     chatMessages.appendChild(sDiv);
@@ -1763,6 +1768,7 @@ function confirmManualFixedSeat(seatId, isPremium, btnEl) {
 }
 
 async function finalizeManualBooking() {
+  isManualFlowActive = false;
   const t = showTyping();
   await new Promise(r => setTimeout(r, 1000));
   removeTyping(t);
@@ -2588,6 +2594,14 @@ function confirmSeat() {
   document.getElementById('coTotal').textContent = `₹${total.toLocaleString()}`;
   document.getElementById('chosenSeat').textContent = selectedSeat;
   document.getElementById('itinSeat').textContent = selectedSeat;
+
+  if (isManualFlowActive) {
+    customTrip.price += upgrade;
+    customTrip.components.push(`💺 Seat ${selectedSeat} ${seatIsPremium ? '(Premium)' : ''}`);
+    addMsg('user', `Selected: Seat ${selectedSeat}`);
+    setTimeout(() => { triggerNextManualStep(); }, 400);
+    return;
+  }
 
   // Chat confirmation
   setTimeout(async () => {
