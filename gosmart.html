@@ -1,0 +1,2703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoSmart – Travel Smarter</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a14;
+    --paper: #f5f3ee;
+    --cream: #faf8f4;
+    --accent: #ff4e00;
+    --accent2: #0057ff;
+    --gold: #f5c842;
+    --muted: #9490a0;
+    --card: #ffffff;
+    --border: #e2dfd8;
+    --success: #1aaa55;
+    --chat-bg: #0d0d1e;
+    --chat-accent: #ff4e00;
+    --shadow: 0 4px 32px rgba(10,10,20,0.10);
+    --shadow-lg: 0 12px 60px rgba(10,10,20,0.18);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow: hidden; height: 100vh; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    height: 100vh;
+    overflow: hidden;
+  }
+  /* Allow scroll only on checkout page */
+  body.checkout-active { overflow-y: auto; height: auto; }
+  body.checkout-active html { overflow: auto; height: auto; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 64px;
+    background: rgba(245,243,238,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 22px; letter-spacing: -0.5px;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--muted);
+    text-decoration: none; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-btn {
+    background: var(--ink); color: #fff;
+    border: none; border-radius: 100px;
+    padding: 8px 20px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background .2s;
+  }
+  .nav-btn:hover { background: var(--accent); }
+
+  /* HERO */
+  .hero {
+    padding-top: 64px;
+    height: 100vh;
+    max-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    grid-template-rows: 1fr;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    padding: 80px 60px 60px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; z-index: 2;
+    overflow: hidden;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 100px; padding: 6px 14px;
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    letter-spacing: .5px; text-transform: uppercase;
+    margin-bottom: 28px; width: fit-content;
+  }
+  .hero-tag::before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); display: block;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(1.4); }
+  }
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(50px, 6vw, 84px);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -2px; margin-bottom: 24px;
+    color: #0a0a0a;
+  }
+  .hero-title .line2 { color: #ff5722; display: inline-block; }
+  .hero-sub {
+    font-size: 16px; color: #888; line-height: 1.6;
+    max-width: 420px; margin-bottom: 48px; font-weight: 400;
+  }
+
+  /* SEARCH CARD */
+  .search-card {
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.06);
+    padding: 32px;
+    max-width: 600px;
+    border: none;
+  }
+  .search-tabs {
+    display: flex; gap: 4px;
+    background: #f5f5f5; border-radius: 14px; padding: 6px;
+    margin-bottom: 28px;
+  }
+  .stab {
+    flex: 1; padding: 10px; border: none;
+    border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    background: transparent; cursor: pointer;
+    color: #888; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .stab.active {
+    background: #ffffff; color: var(--ink);
+    box-shadow: 0 4px 12px rgba(0,0,0,.04);
+  }
+  .search-row {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 16px; align-items: end; margin-bottom: 16px;
+  }
+  .field-group label {
+    display: block; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #999; margin-bottom: 8px; margin-left: 4px;
+  }
+  .field-group input, .field-group select {
+    width: 100%; padding: 16px 20px;
+    border: 1.5px solid #eaeaea; border-radius: 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 16px;
+    color: #0a0a0a; background: #faf9f6;
+    outline: none; transition: all .2s;
+  }
+  .field-group input:focus, .field-group select:focus {
+    border-color: #0057ff; background: #fff; box-shadow: 0 0 0 4px rgba(0,87,255,0.1);
+  }
+  .swap-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid #eaeaea; background: #fff;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; transition: all .2s; margin-bottom: 4px;
+    flex-shrink: 0;
+  }
+  .swap-btn:hover { border-color: #0a0a0a; transform: rotate(180deg); }
+  .search-row2 {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px; margin-bottom: 28px;
+  }
+  .search-btn {
+    width: 100%; padding: 20px;
+    background: #0a0a14; color: #fff;
+    border: none; border-radius: 100px;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; letter-spacing: 0px;
+    transition: all .25s; display: flex; align-items: center;
+    justify-content: center; gap: 8px;
+  }
+  .search-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(10,10,20,.3); }
+
+  /* TRIP TYPE CHIPS */
+  .trip-chips {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;
+    padding-left: 2px;
+  }
+  .chip {
+    padding: 8px 18px; border-radius: 100px;
+    border: 1.5px solid transparent; background: #fff;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    color: #444; transition: all .2s; outline: 1px solid #eaeaea;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .chip.active, .chip:hover {
+    border-color: #0057ff; color: #0057ff; outline-color: transparent; background: #f0f5ff;
+  }
+
+  /* HERO RIGHT – CHAT PANEL */
+  .hero-right {
+    background: var(--chat-bg);
+    display: flex; flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+  }
+  .chat-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .ai-avatar {
+    width: 42px; height: 42px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+    position: relative;
+  }
+  .ai-avatar::after {
+    content: ''; position: absolute;
+    bottom: -2px; right: -2px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--success);
+    border: 2px solid var(--chat-bg);
+  }
+  .chat-header-info h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700; color: #fff;
+  }
+  .chat-header-info p {
+    font-size: 11px; color: rgba(255,255,255,.45);
+    font-weight: 300;
+  }
+  .chat-close-btn {
+    margin-left: auto; background: rgba(255,255,255,.08);
+    border: none; color: rgba(255,255,255,.5);
+    width: 32px; height: 32px; border-radius: 50%;
+    cursor: pointer; font-size: 16px; transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chat-close-btn:hover { background: rgba(255,78,0,.3); color: #fff; }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 16px;
+    min-height: 0;
+    scrollbar-width: none;  /* Firefox */
+  }
+  .chat-messages::-webkit-scrollbar { width: 0; background: transparent; }
+  .chat-messages:hover::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
+  .chat-messages:hover { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.15) transparent; }
+
+  .msg { display: flex; gap: 10px; }
+  .msg.user { flex-direction: row-reverse; }
+  .msg-bubble {
+    max-width: 80%; padding: 12px 16px; border-radius: 18px;
+    font-size: 13.5px; line-height: 1.55; font-weight: 400;
+  }
+  .msg.bot .msg-bubble {
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.88);
+    border-bottom-left-radius: 4px;
+  }
+  .msg.user .msg-bubble {
+    background: var(--accent);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .msg-time { font-size: 10px; color: rgba(255,255,255,.3); margin-top: 4px; }
+
+  .suggestion-cards {
+    display: flex; flex-direction: column; gap: 8px; margin-top: 8px;
+  }
+  .sug-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px; padding: 12px 14px;
+    cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sug-card:hover {
+    background: rgba(255,78,0,.15);
+    border-color: rgba(255,78,0,.4);
+    transform: translateX(4px);
+  }
+  .sug-icon { font-size: 22px; flex-shrink: 0; }
+  .sug-info { flex: 1; }
+  .sug-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+  .sug-meta { font-size: 11px; color: rgba(255,255,255,.45); }
+  .sug-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700; color: var(--gold);
+  }
+
+  .typing-indicator {
+    display: flex; gap: 4px; padding: 12px 16px;
+    background: rgba(255,255,255,.08); border-radius: 18px;
+    width: fit-content; border-bottom-left-radius: 4px;
+  }
+  .typing-indicator span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,.5);
+    animation: bounce 1.2s infinite;
+  }
+  .typing-indicator span:nth-child(2) { animation-delay: .2s; }
+  .typing-indicator span:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce {
+    0%,60%,100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+  }
+
+  .chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,.08);
+    display: flex; gap: 10px; align-items: center;
+    flex-shrink: 0;
+  }
+  .chat-input {
+    flex: 1; padding: 12px 16px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 100px; color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    outline: none; transition: border-color .2s;
+  }
+  .chat-input::placeholder { color: rgba(255,255,255,.3); }
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-send {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--accent); border: none;
+    color: #fff; cursor: pointer; font-size: 16px;
+    transition: all .2s; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .chat-send:hover { background: #e04000; transform: scale(1.05); }
+
+  /* CHAT TOGGLE BUTTON (when panel is closed) */
+  .chat-fab {
+    position: fixed; bottom: 32px; right: 32px; z-index: 200;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; color: #fff; font-size: 26px;
+    cursor: pointer; box-shadow: 0 8px 32px rgba(255,78,0,.4);
+    display: none; align-items: center; justify-content: center;
+    transition: transform .2s;
+  }
+  .chat-fab:hover { transform: scale(1.08); }
+  .chat-fab .badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--gold); color: var(--ink);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* SEAT MAP MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(10,10,20,.7);
+    backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .3s;
+  }
+  .modal-overlay.open {
+    display: flex; opacity: 1;
+  }
+  .modal {
+    background: var(--card);
+    border-radius: 28px;
+    width: min(780px, 95vw);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    transform: scale(.96); transition: transform .3s;
+  }
+  .modal-overlay.open .modal { transform: scale(1); }
+  .modal-header {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .modal-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+  }
+  .modal-close {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--border); background: var(--paper);
+    cursor: pointer; font-size: 18px; transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { border-color: var(--accent); color: var(--accent); }
+  .modal-body { padding: 24px 32px; overflow-y: auto; }
+  .modal-footer {
+    padding: 20px 32px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; background: var(--paper);
+  }
+
+  /* SEAT MAP */
+  .plane-body {
+    background: linear-gradient(180deg, #f0f0f0 0%, #e8e8e8 100%);
+    border-radius: 20px; padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .cabin-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    text-align: center; margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px dashed var(--border);
+  }
+  .seat-row {
+    display: flex; align-items: center; gap: 6px;
+    justify-content: center; margin-bottom: 5px;
+  }
+  .row-num {
+    width: 22px; font-size: 11px; color: var(--muted);
+    font-weight: 600; text-align: center; flex-shrink: 0;
+  }
+  .aisle { width: 20px; flex-shrink: 0; }
+  .seat {
+    width: 34px; height: 34px; border-radius: 8px 8px 5px 5px;
+    border: 2px solid transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; transition: all .15s;
+    position: relative;
+  }
+  .seat.available {
+    background: #dff0e8; border-color: #a8d5be; color: #2d7a56;
+  }
+  .seat.available:hover { background: var(--success); border-color: var(--success); color: #fff; transform: scale(1.1); }
+  .seat.occupied {
+    background: #f0f0f0; border-color: #d8d8d8; color: #bbb; cursor: not-allowed;
+  }
+  .seat.selected {
+    background: var(--accent2); border-color: var(--accent2); color: #fff;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(0,87,255,.35);
+  }
+  .seat.premium {
+    background: #fff8e0; border-color: #f5c842; color: #b8930a;
+  }
+  .seat.premium:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .seat.premium.selected {
+    background: var(--gold); border-color: var(--gold); color: var(--ink);
+  }
+  .seat-legend {
+    display: flex; gap: 16px; justify-content: center; margin-top: 16px; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--muted); font-weight: 500;
+  }
+  .legend-dot {
+    width: 14px; height: 14px; border-radius: 4px; border: 2px solid transparent;
+  }
+
+  /* BOOKING SUMMARY CARD */
+  .booking-summary {
+    background: var(--paper); border-radius: 16px;
+    padding: 20px; border: 1px solid var(--border);
+  }
+  .booking-summary h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700; margin-bottom: 14px;
+  }
+  .bsum-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .bsum-row:last-child { border-bottom: none; }
+  .bsum-label { color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .bsum-val { font-weight: 600; }
+  .bsum-total {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0 0; font-weight: 700;
+  }
+  .bsum-total-label { font-family: 'Syne', sans-serif; font-size: 15px; }
+  .bsum-total-val {
+    font-family: 'Syne', sans-serif; font-size: 22px;
+    color: var(--accent); letter-spacing: -0.5px;
+  }
+
+  /* CHECKOUT PAGE */
+  .checkout-page {
+    display: none;
+    min-height: 100vh;
+    background: var(--cream);
+    padding-top: 64px;
+  }
+  .checkout-page.active { display: block; }
+  .main-page { min-height: 100vh; }
+  .main-page.hidden { display: none; }
+  .checkout-inner {
+    max-width: 1100px; margin: 0 auto; padding: 60px 40px;
+    display: grid; grid-template-columns: 1fr 380px; gap: 40px;
+    align-items: start;
+  }
+  .checkout-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px; font-weight: 800; letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .checkout-sub { font-size: 14px; color: var(--muted); margin-bottom: 36px; }
+  .checkout-section {
+    background: var(--card); border-radius: 20px;
+    padding: 28px; margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .checkout-section h3 {
+    font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700;
+    margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-field.full { grid-column: 1 / -1; }
+  .form-field label { font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); }
+  .form-field input, .form-field select {
+    padding: 12px 14px; border: 2px solid var(--border);
+    border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--ink); background: var(--paper);
+    outline: none; transition: border-color .2s;
+  }
+  .form-field input:focus, .form-field select:focus { border-color: var(--accent2); background: #fff; }
+
+  .checkout-sidebar { position: sticky; top: 90px; }
+  .price-breakdown {
+    background: var(--card); border-radius: 20px; padding: 28px;
+    border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .price-breakdown h3 {
+    font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .price-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .price-row:last-child { border-bottom: none; }
+  .price-row .label { color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .price-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0 0; border-top: 2px solid var(--ink);
+    margin-top: 4px;
+  }
+  .price-total .label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
+  .price-total .val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; color: var(--accent); }
+  .pay-btn {
+    width: 100%; padding: 18px;
+    background: var(--ink); color: #fff;
+    border: none; border-radius: 14px;
+    font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all .25s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .pay-btn:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,78,0,.3); }
+
+  /* ITINERARY IN CHECKOUT */
+  .itin-step {
+    display: flex; gap: 14px; padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .itin-step:last-child { border-bottom: none; }
+  .itin-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .itin-icon.flight { background: #edf2ff; }
+  .itin-icon.hotel { background: #fff8e0; }
+  .itin-icon.car { background: #e8f5e9; }
+  .itin-icon.train { background: #fce4ec; }
+  .itin-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .itin-info p { font-size: 12px; color: var(--muted); }
+
+  .badge-confirm {
+    background: #e8f5e9; color: var(--success);
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* DECORATIVE BG */
+  .bg-deco {
+    position: absolute; pointer-events: none;
+    border-radius: 50%; filter: blur(60px); opacity: .15;
+  }
+  .bg-deco-1 {
+    width: 400px; height: 400px;
+    background: var(--accent2);
+    top: -100px; left: -100px;
+  }
+  .bg-deco-2 {
+    width: 300px; height: 300px;
+    background: var(--accent);
+    bottom: 50px; right: 100px;
+  }
+
+  /* FADE IN */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp .5s ease both; }
+  .delay-1 { animation-delay: .1s; }
+  .delay-2 { animation-delay: .2s; }
+  .delay-3 { animation-delay: .3s; }
+
+  /* SUCCESS */
+  .success-overlay {
+    position: fixed; inset: 0; z-index: 600;
+    background: var(--ink);
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 20px;
+  }
+  .success-overlay.show { display: flex; }
+  .success-icon {
+    font-size: 80px; animation: pop .5s ease;
+  }
+  @keyframes pop {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+  .success-title {
+    font-family: 'Syne', sans-serif; font-size: 40px;
+    font-weight: 800; color: #fff; letter-spacing: -1px;
+  }
+  .success-sub { color: rgba(255,255,255,.5); font-size: 16px; }
+  .success-code {
+    font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;
+    color: var(--gold); letter-spacing: 4px;
+  }
+
+  /* Scrollbar */
+  .chat-messages::-webkit-scrollbar { width: 3px; }
+
+  /* PREFERRED SEAT CARD */
+  .pref-seat-card {
+    background: linear-gradient(135deg, rgba(0,87,255,0.08), rgba(245,200,66,0.10));
+    border: 1.5px solid rgba(0,87,255,0.25);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 10px;
+    animation: fadeUp .4s ease both;
+  }
+  .pref-seat-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .pref-seat-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent2), #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .pref-seat-title {
+    font-size: 13px; font-weight: 700; color: #fff;
+  }
+  .pref-seat-sub {
+    font-size: 11px; color: rgba(255,255,255,.5);
+  }
+  .pref-seat-body {
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 12px;
+  }
+  .pref-seat-visual {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--success), #17b169);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 800; color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(26,170,85,.3);
+    position: relative;
+  }
+  .pref-seat-visual::after {
+    content: '✓';
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--gold);
+    font-size: 10px; color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+  .pref-seat-details {
+    flex: 1;
+  }
+  .pref-seat-name {
+    font-size: 14px; font-weight: 700; color: #fff;
+    margin-bottom: 2px;
+  }
+  .pref-seat-meta {
+    font-size: 11px; color: rgba(255,255,255,.5);
+    line-height: 1.4;
+  }
+  .pref-seat-tag {
+    display: inline-block;
+    background: rgba(26,170,85,0.15);
+    color: #4ade80;
+    padding: 2px 8px; border-radius: 100px;
+    font-size: 10px; font-weight: 700;
+    margin-top: 4px;
+  }
+  .pref-action-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .pref-btn {
+    padding: 10px 16px;
+    border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 13px;
+    cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .pref-btn-yes {
+    background: var(--success); color: #fff;
+  }
+  .pref-btn-yes:hover {
+    background: #17b169; transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(26,170,85,.35);
+  }
+  .pref-btn-no {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.15);
+  }
+  .pref-btn-no:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,.3);
+  }
+
+  /* INITIAL CHOICE BUTTONS */
+  .init-choice-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;
+  }
+  .init-choice-btn {
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,.12);
+    border-radius: 14px; padding: 16px 12px; cursor: pointer; transition: all .25s;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+  }
+  .init-choice-btn:hover {
+    background: rgba(255,78,0,.12); border-color: rgba(255,78,0,.4); transform: translateY(-2px);
+  }
+  .init-choice-icon { font-size: 28px; }
+  .init-choice-label { font-size: 13px; font-weight: 700; color: #fff; }
+  .init-choice-meta { font-size: 10px; color: rgba(255,255,255,.45); }
+
+  /* DRAFT CARD */
+  .draft-card {
+    background: linear-gradient(135deg, rgba(255,78,0,0.08), rgba(245,200,66,0.08));
+    border: 1.5px solid rgba(255,78,0,0.25); border-radius: 14px;
+    padding: 14px; margin-bottom: 8px; cursor: pointer; transition: all .2s;
+  }
+  .draft-card:hover { border-color: var(--accent); transform: translateX(4px); }
+  .draft-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .draft-badge {
+    background: rgba(255,78,0,.2); color: var(--accent); padding: 3px 10px;
+    border-radius: 100px; font-size: 10px; font-weight: 700; letter-spacing: .5px;
+  }
+  .draft-date { font-size: 10px; color: rgba(255,255,255,.4); margin-left: auto; }
+  .draft-route { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .draft-details { font-size: 11px; color: rgba(255,255,255,.5); line-height: 1.5; }
+  .draft-price { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--gold); margin-top: 6px; }
+
+  /* ALT ITINERARY CATEGORY */
+  .alt-category { margin-top: 10px; }
+  .alt-category-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .alt-category-label.faster { color: #38bdf8; }
+  .alt-category-label.cheaper { color: #4ade80; }
+  .alt-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px; padding: 12px; margin-bottom: 6px; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .alt-card:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.25); transform: translateX(3px); }
+  .alt-card-icon { font-size: 20px; flex-shrink: 0; }
+  .alt-card-info { flex: 1; }
+  .alt-card-title { font-size: 12px; font-weight: 600; color: #fff; }
+  .alt-card-meta { font-size: 10px; color: rgba(255,255,255,.45); margin-top: 2px; }
+  .alt-card-right { text-align: right; }
+  .alt-card-price { font-family: 'Syne',sans-serif; font-size: 13px; font-weight: 700; color: var(--gold); }
+  .alt-card-savings {
+    font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 100px; margin-top: 3px; display: inline-block;
+  }
+  .alt-card-savings.time-save { background: rgba(56,189,248,.15); color: #38bdf8; }
+  .alt-card-savings.price-save { background: rgba(74,222,128,.15); color: #4ade80; }
+
+  /* COMPARISON CARD */
+  .compare-card {
+    background: linear-gradient(135deg, rgba(0,87,255,0.06), rgba(74,222,128,0.06));
+    border: 1.5px solid rgba(0,87,255,0.2); border-radius: 16px; padding: 16px; margin-top: 8px;
+    animation: fadeUp .4s ease both;
+  }
+  .compare-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .compare-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: start; }
+  .compare-col { background: rgba(255,255,255,.05); border-radius: 10px; padding: 10px; }
+  .compare-col-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+  .compare-col-label.old { color: rgba(255,255,255,.4); }
+  .compare-col-label.new { color: #4ade80; }
+  .compare-vs { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.3); padding-top: 18px; }
+  .compare-item { font-size: 11px; color: rgba(255,255,255,.7); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .compare-total { font-size: 13px; font-weight: 700; margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,.1); }
+  .compare-total.old { color: rgba(255,255,255,.5); text-decoration: line-through; }
+  .compare-total.new-val { color: #4ade80; }
+  .compare-savings-banner {
+    background: linear-gradient(135deg, rgba(74,222,128,.15), rgba(56,189,248,.15));
+    border-radius: 10px; padding: 10px; margin-top: 10px; text-align: center;
+  }
+  .compare-savings-big { font-family: 'Syne',sans-serif; font-size: 18px; font-weight: 800; color: #4ade80; }
+  .compare-savings-sub { font-size: 10px; color: rgba(255,255,255,.5); margin-top: 2px; }
+
+  /* AUTO-BOOK TRACKER */
+  .tracker-card {
+    background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(236,72,153,0.08));
+    border: 1.5px solid rgba(139,92,246,0.25); border-radius: 16px; padding: 18px; margin-top: 8px;
+    animation: fadeUp .4s ease both;
+  }
+  .tracker-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .tracker-icon {
+    width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .tracker-title { font-size: 13px; font-weight: 700; color: #fff; }
+  .tracker-sub { font-size: 11px; color: rgba(255,255,255,.5); line-height: 1.4; margin-top: 2px; }
+  .tracker-trend {
+    background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .tracker-trend-col { display: flex; flex-direction: column; gap: 4px; }
+  .tracker-trend-col label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .5px; }
+  .tracker-trend-val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #fff; }
+  .tracker-trend-val.diff { color: #ec4899; }
+  .tracker-slider-wrap { margin-bottom: 16px; }
+  .tracker-slider-labels { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #8b5cf6; margin-bottom: 8px; }
+  .tracker-slider {
+    width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: rgba(255,255,255,.1); outline: none;
+  }
+  .tracker-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #ec4899; cursor: pointer; border: 3px solid var(--chat-bg);
+  }
+  .tracker-btn {
+    width: 100%; padding: 12px; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 13px; cursor: pointer; transition: all .2s;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tracker-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(139,92,246,.3); }
+
+  /* MANUAL BOOKING CHAT UI */
+  .chip-row { position: relative; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-row.scroll { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .chip-row.scroll::-webkit-scrollbar { display: none; }
+  .chip-row .chip {
+    background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.8); font-size: 12px; font-family: 'DM Sans', sans-serif;
+    padding: 8px 16px; border-radius: 100px; cursor: pointer; transition: all .2s;
+    display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap;
+  }
+  .chip-row .chip:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); color: #fff; }
+  .chip-row .chip.selected { background: var(--success); border-color: var(--success); color: #0f172a; }
+  
+  .chat-input-box {
+    display: flex; gap: 8px; margin-top: 10px;
+    background: rgba(0,0,0,.2); padding: 4px; border-radius: 100px;
+  }
+  .chat-input-box input {
+    flex: 1; background: transparent; border: none; color: #fff;
+    padding: 8px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+  }
+  .chat-input-box input::placeholder { color: rgba(255,255,255,.3); }
+  .chat-input-box button {
+    background: var(--accent); color: #fff; border: none; border-radius: 100px;
+    padding: 6px 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+
+  /* DOWNLOAD ITINERARY BTN */
+  .download-btn {
+    width: 100%; padding: 14px; margin-top: 12px;
+    background: transparent; color: var(--accent2);
+    border: 2px solid var(--accent2); border-radius: 14px;
+    font-family: 'Syne',sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .25s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .download-btn:hover { background: var(--accent2); color: #fff; transform: translateY(-2px); }
+
+  /* Responsive hints */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { min-height: 600px; }
+    .checkout-inner { grid-template-columns: 1fr; }
+    .checkout-sidebar { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Go<span>Smart</span></div>
+  <div class="nav-links">
+    <a href="#">Trips</a>
+    <a href="#">Explore</a>
+    <a href="#">Deals</a>
+    <a href="#">Business</a>
+    <button class="nav-btn">Kalyan</button>
+  </div>
+</nav>
+
+<!-- MAIN PAGE -->
+<div class="main-page" id="mainPage">
+  <div class="hero">
+    <!-- BG DECOS -->
+    <div class="bg-deco bg-deco-1"></div>
+    <div class="bg-deco bg-deco-2"></div>
+
+    <!-- LEFT: SEARCH -->
+    <div class="hero-left">
+      <div class="hero-tag fade-up">AI-Powered Travel Planning</div>
+      <h1 class="hero-title fade-up delay-1">
+        Travel<br><span class="line2">Smarter.</span><br>Every Trip.
+      </h1>
+      <p class="hero-sub fade-up delay-2">
+        Book flights, trains, cars and hotels in one place. Your AI assistant remembers your preferences and plans ahead.
+      </p>
+
+      <!-- SEARCH CARD -->
+      <div class="search-card fade-up delay-3">
+        <div class="search-tabs">
+          <button class="stab active" onclick="switchTab(this)">✈ Flights</button>
+          <button class="stab" onclick="switchTab(this)">🏨 Hotels</button>
+          <button class="stab" onclick="switchTab(this)">🚗 Cars</button>
+          <button class="stab" onclick="switchTab(this)">🚄 Trains</button>
+        </div>
+        <div class="trip-chips">
+          <div class="chip active">🔄 Round Trip</div>
+          <div class="chip">➡️ One Way</div>
+          <div class="chip">🗺 Multi-City</div>
+        </div>
+        <div class="search-row">
+          <div class="field-group">
+            <label>From</label>
+            <input type="text" id="fromField" value="Hyderabad (HYD)" placeholder="Departure city" />
+          </div>
+          <button class="swap-btn" onclick="swapCities()">⇄</button>
+          <div class="field-group">
+            <label>To</label>
+            <input type="text" id="toField" placeholder="Destination city" />
+          </div>
+        </div>
+        <div class="search-row2">
+          <div class="field-group">
+            <label>Depart</label>
+            <input type="date" id="departDate" />
+          </div>
+          <div class="field-group">
+            <label>Return</label>
+            <input type="date" id="returnDate" />
+          </div>
+          <div class="field-group">
+            <label>Travellers</label>
+            <select>
+              <option>1 Adult</option>
+              <option>2 Adults</option>
+              <option>2 Adults, 1 Child</option>
+              <option>3 Adults</option>
+            </select>
+          </div>
+        </div>
+        <button class="search-btn" onclick="alert('Search results would appear here in full version.')">
+          🔍 Search Smart Trips
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: CHAT PANEL -->
+    <div class="hero-right" id="chatPanel">
+      <div class="chat-header">
+        <div class="ai-avatar">🤖</div>
+        <div class="chat-header-info">
+          <h3>Aria · GoSmart AI</h3>
+          <p>Based on your travel history from Hyderabad</p>
+        </div>
+        <button class="chat-close-btn" onclick="toggleChat()" title="Minimize">✕</button>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-area">
+        <input class="chat-input" id="chatInput" placeholder="Ask Aria anything…" onkeydown="if(event.key==='Enter') sendUserMessage()" />
+        <button class="chat-send" onclick="sendUserMessage()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT FAB (when chat minimized) -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()">
+  🤖<span class="badge">3</span>
+</button>
+
+<!-- SEAT MAP MODAL -->
+<div class="modal-overlay" id="seatModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>✈ Select Your Seat</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">IndiGo 6E-204 · HYD → BOM · Row 1–30</p>
+      </div>
+      <button class="modal-close" onclick="closeSeatModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="seatMapContainer"></div>
+      <div class="seat-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#dff0e8;border-color:#a8d5be"></div> Available</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f0f0f0;border-color:#d8d8d8"></div> Occupied</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fff8e0;border-color:#f5c842"></div> Premium</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent2);border-color:var(--accent2)"></div> Selected</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div>
+        <span id="seatSelectedLabel" style="font-size:14px;color:var(--muted)">No seat selected</span>
+      </div>
+      <button class="search-btn" style="width:auto;padding:12px 28px" onclick="confirmSeat()">Confirm Seat →</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING CONFIRMED MODAL (Total + Checkout) -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>🎉 Your Trip is Ready!</h2>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px;">Review your complete itinerary below</p>
+      </div>
+      <button class="modal-close" onclick="closeBookingModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="booking-summary">
+        <h4>✈ HYD → BOM · Round Trip</h4>
+        <div class="bsum-row"><span class="bsum-label">✈ IndiGo 6E-204 (Seat <span id="chosenSeat">—</span>)</span><span class="bsum-val">₹4,850</span></div>
+        <div class="bsum-row"><span class="bsum-label">🏨 The Taj Mahal Palace · 2 nights</span><span class="bsum-val">₹18,400</span></div>
+        <div class="bsum-row"><span class="bsum-label">🚗 Hertz Economy · 3 days</span><span class="bsum-val">₹3,200</span></div>
+        <div class="bsum-row"><span class="bsum-label">🚄 Deccan Queen · HYD–Pune leg</span><span class="bsum-val">₹1,240</span></div>
+        <div class="bsum-row"><span class="bsum-label">💺 Seat upgrade</span><span class="bsum-val" id="seatUpgradePrice">₹0</span></div>
+        <div class="bsum-row"><span class="bsum-label">Taxes & Fees</span><span class="bsum-val">₹2,810</span></div>
+        <div class="bsum-total">
+          <span class="bsum-total-label">Total</span>
+          <span class="bsum-total-val" id="grandTotal">₹30,500</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span style="font-size:13px;color:var(--muted)">🔒 Secure checkout · Instant confirmation</span>
+      <button class="search-btn" style="width:auto;padding:12px 32px" onclick="goToCheckout()">Proceed to Checkout →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT PAGE -->
+<div class="checkout-page" id="checkoutPage">
+  <div class="checkout-inner">
+    <div>
+      <h1 class="checkout-title fade-up">Secure Checkout</h1>
+      <p class="checkout-sub fade-up">Complete your booking · GoSmart ID #GS-2024-98321</p>
+
+      <!-- ITINERARY SUMMARY -->
+      <div class="checkout-section fade-up">
+        <h3>🗺 Trip Itinerary</h3>
+        <div class="itin-step">
+          <div class="itin-icon flight">✈</div>
+          <div class="itin-info">
+            <h4>IndiGo 6E-204 · HYD → BOM</h4>
+            <p>Apr 12, 2025 · 06:30 → 08:25 · Seat <span id="itinSeat">—</span> · Economy</p>
+          </div>
+          <span class="badge-confirm">Confirmed</span>
+        </div>
+        <div class="itin-step">
+          <div class="itin-icon train">🚄</div>
+          <div class="itin-info">
+            <h4>Deccan Queen · BOM → Pune</h4>
+            <p>Apr 12, 2025 · 17:10 → 20:40 · 1AC</p>
+          </div>
+          <span class="badge-confirm">Confirmed</span>
+        </div>
+        <div class="itin-step">
+          <div class="itin-icon hotel">🏨</div>
+          <div class="itin-info">
+            <h4>The Taj Mahal Palace, Mumbai</h4>
+            <p>Apr 12–14 · Deluxe Sea View · 2 nights</p>
+          </div>
+          <span class="badge-confirm">Confirmed</span>
+        </div>
+        <div class="itin-step">
+          <div class="itin-icon car">🚗</div>
+          <div class="itin-info">
+            <h4>Hertz Economy · Mumbai Airport</h4>
+            <p>Apr 12–15 · Toyota Etios or similar · 3 days</p>
+          </div>
+          <span class="badge-confirm">Confirmed</span>
+        </div>
+      </div>
+
+      <!-- PASSENGER INFO -->
+      <div class="checkout-section fade-up delay-1">
+        <h3>👤 Passenger Details</h3>
+        <div class="form-grid">
+          <div class="form-field"><label>First Name</label><input type="text" value="Kalyan" /></div>
+          <div class="form-field"><label>Last Name</label><input type="text" value="" /></div>
+          <div class="form-field"><label>Date of Birth</label><input type="date" value="1990-05-14" /></div>
+          <div class="form-field"><label>Passport / ID</label><input type="text" value="P1234567" /></div>
+          <div class="form-field"><label>Email</label><input type="email" value="kalyan@email.com" /></div>
+          <div class="form-field"><label>Phone</label><input type="tel" value="+91 98765 43210" /></div>
+        </div>
+      </div>
+
+      <!-- PAYMENT -->
+      <div class="checkout-section fade-up delay-2">
+        <h3>💳 Payment</h3>
+        <div class="form-grid">
+          <div class="form-field full"><label>Cardholder Name</label><input type="text" placeholder="As on card" value="Kalyan" /></div>
+          <div class="form-field full"><label>Card Number</label><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" /></div>
+          <div class="form-field"><label>Expiry</label><input type="text" placeholder="MM/YY" /></div>
+          <div class="form-field"><label>CVV</label><input type="text" placeholder="•••" maxlength="4" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="checkout-sidebar">
+      <div class="price-breakdown fade-up">
+        <h3>💰 Price Summary</h3>
+        <div class="price-row"><span class="label">✈ Flight (IndiGo 6E-204)</span><span>₹4,850</span></div>
+        <div class="price-row"><span class="label">🏨 Hotel (2 nights)</span><span>₹18,400</span></div>
+        <div class="price-row"><span class="label">🚗 Car Rental (3 days)</span><span>₹3,200</span></div>
+        <div class="price-row"><span class="label">🚄 Train (1AC)</span><span>₹1,240</span></div>
+        <div class="price-row"><span class="label">💺 Seat Upgrade</span><span id="coSeatUpgrade">₹0</span></div>
+        <div class="price-row"><span class="label">Taxes & Fees</span><span>₹2,810</span></div>
+        <div class="price-total">
+          <span class="label">Total</span>
+          <span class="val" id="coTotal">₹30,500</span>
+        </div>
+      </div>
+      <button class="pay-btn" onclick="confirmPayment()">🔒 Pay &amp; Confirm →</button>
+      <button class="download-btn" onclick="downloadItinerary()">📥 Download Itinerary</button>
+      <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px;">256-bit SSL · Visa / MC / UPI / NetBanking</p>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon">🎉</div>
+  <div class="success-title">Booking Confirmed!</div>
+  <div class="success-sub">Your trip is all set. Have a great journey!</div>
+  <div class="success-code">GS-HYD-2024-98321</div>
+  <p style="color:rgba(255,255,255,.4);font-size:13px;margin-top:8px;">Confirmation sent to kalyan@email.com</p>
+  <button onclick="resetApp()" style="margin-top:32px;padding:14px 36px;background:var(--accent);color:#fff;border:none;border-radius:100px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='#e04000'" onmouseout="this.style.background='var(--accent)'">
+    Plan Another Trip →
+  </button>
+</div>
+
+<script>
+// ===================== MOCK DATA =====================
+const mockTrips = [
+  {
+    id: 1,
+    from: "Hyderabad (HYD)",
+    to: "Mumbai (BOM)",
+    flag: "🏙",
+    date: "Dec 2024",
+    price: 28500,
+    components: ["✈ IndiGo 6E-204", "🏨 Taj Mahal Palace", "🚗 Hertz Economy", "🚄 Deccan Queen"],
+    tags: ["Business", "2 nights"],
+    popularity: "Most visited",
+  },
+  {
+    id: 2,
+    from: "Hyderabad (HYD)",
+    to: "Goa (GOI)",
+    flag: "🏖",
+    date: "Oct 2024",
+    price: 22000,
+    components: ["✈ Air India AI-405", "🏨 Taj Exotica Resort", "🚗 Self-drive Creta"],
+    tags: ["Leisure", "4 nights"],
+    popularity: "Favorite",
+  },
+  {
+    id: 3,
+    from: "Hyderabad (HYD)",
+    to: "Delhi (DEL)",
+    flag: "🏛",
+    date: "Aug 2024",
+    price: 31200,
+    components: ["✈ Vistara UK-816", "🏨 The Leela Palace", "🚗 Avis Premium", "🚄 Rajdhani Express"],
+    tags: ["Conference", "3 nights"],
+    popularity: "Recent",
+  }
+];
+
+// ===================== DRAFT BOOKINGS =====================
+const draftBookings = [
+  {
+    id: 'D001',
+    route: 'HYD → BOM',
+    from: 'Hyderabad (HYD)', to: 'Mumbai (BOM)',
+    flag: '🏙',
+    date: 'Saved 2 days ago',
+    travelDate: 'Apr 12, 2026',
+    components: ['✈ IndiGo 6E-204', '🏨 Taj Mahal Palace', '🚗 Hertz Economy', '🚄 Deccan Queen'],
+    totalTime: '14h 10m',
+    price: 30500,
+    seat: '12A',
+    status: 'Pending Payment',
+  },
+  {
+    id: 'D002',
+    route: 'HYD → GOI',
+    from: 'Hyderabad (HYD)', to: 'Goa (GOI)',
+    flag: '🏖',
+    date: 'Saved 5 days ago',
+    travelDate: 'Apr 20, 2026',
+    components: ['✈ Air India AI-405', '🏨 Taj Exotica', '🚗 Self-drive Creta'],
+    totalTime: '8h 30m',
+    price: 24200,
+    seat: '8A',
+    status: 'Pending Payment',
+  }
+];
+
+// Alternative itineraries for each draft
+const altItineraries = {
+  'D001': {
+    faster: [
+      {
+        id: 'F1', label: 'Express Direct',
+        route: 'HYD → BOM', icon: '⚡',
+        components: ['✈ IndiGo 6E-118 (Non-stop)', '🏨 Taj Mahal Palace', '🚗 Ola Rental'],
+        totalTime: '9h 45m', timeSaved: '4h 25m',
+        price: 32800, priceDiff: +2300,
+      },
+      {
+        id: 'F2', label: 'Speed Priority',
+        route: 'HYD → BOM', icon: '🚀',
+        components: ['✈ Vistara UK-872 (Non-stop)', '🏨 Trident BKC', '🚗 Hertz Economy'],
+        totalTime: '10h 20m', timeSaved: '3h 50m',
+        price: 31400, priceDiff: +900,
+      }
+    ],
+    cheaper: [
+      {
+        id: 'C1', label: 'Budget Saver',
+        route: 'HYD → BOM', icon: '💰',
+        components: ['✈ SpiceJet SG-451', '🏨 ITC Grand Central', '🚌 RedBus Volvo'],
+        totalTime: '16h 00m', timeDiff: '+1h 50m',
+        price: 22800, priceSaved: 7700,
+      },
+      {
+        id: 'C2', label: 'Smart Value',
+        route: 'HYD → BOM', icon: '🎯',
+        components: ['✈ IndiGo 6E-204', '🏨 Novotel Juhu', '🚗 Zoomcar Sedan'],
+        totalTime: '14h 30m', timeDiff: '+0h 20m',
+        price: 26100, priceSaved: 4400,
+      }
+    ]
+  },
+  'D002': {
+    faster: [
+      {
+        id: 'F3', label: 'Direct Express',
+        route: 'HYD → GOI', icon: '⚡',
+        components: ['✈ IndiGo 6E-520 (Non-stop)', '🏨 Taj Exotica', '🚗 Self-drive i20'],
+        totalTime: '6h 15m', timeSaved: '2h 15m',
+        price: 26500, priceDiff: +2300,
+      }
+    ],
+    cheaper: [
+      {
+        id: 'C3', label: 'Beach Budget',
+        route: 'HYD → GOI', icon: '💰',
+        components: ['✈ SpiceJet SG-321', '🏨 Resort Rio', '🚗 Activa Rental'],
+        totalTime: '9h 45m', timeDiff: '+1h 15m',
+        price: 18500, priceSaved: 5700,
+      }
+    ]
+  }
+};
+
+let activeDraft = null;  // currently viewed draft
+let autoBookedTrip = null; // tracking if a trip was hit by auto-book demo
+
+// ===================== PREFERRED SEATS DATA =====================
+// Simulated user preferences based on travel history
+const userPreferences = {
+  preferredType: 'window',      // window seat lover
+  preferredSide: 'A',           // left window
+  preferredRows: [12, 14, 15],  // mid-cabin comfort zone
+  lastSeat: '12A',
+  history: ['12A', '14A', '8A', '11A'],
+};
+
+// Returns the best available preferred seat
+function getPreferredSeat() {
+  for (const row of userPreferences.preferredRows) {
+    const seatId = `${row}${userPreferences.preferredSide}`;
+    if (!seatConfig.occupied.includes(seatId)) {
+      return { id: seatId, row, col: userPreferences.preferredSide, isPremium: seatConfig.premium.includes(String(row)) };
+    }
+  }
+  // Fallback: find any window seat available
+  for (let r = 7; r <= seatConfig.rows; r++) {
+    const seatId = `${r}A`;
+    if (!seatConfig.occupied.includes(seatId)) {
+      return { id: seatId, row: r, col: 'A', isPremium: seatConfig.premium.includes(String(r)) };
+    }
+  }
+  return null;
+}
+
+// ===================== CHAT STATE =====================
+let chatStep = 0;
+let selectedTrip = null;
+let selectedSeat = null;
+let seatIsPremium = false;
+let chatOpen = true;
+
+const chatMessages = document.getElementById('chatMessages');
+
+function addMsg(who, content, delay=0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.className = `msg ${who}`;
+      div.innerHTML = `<div class="msg-bubble">${content}</div>`;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      resolve();
+    }, delay);
+  });
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'msg bot typing-msg';
+  div.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return div;
+}
+
+function removeTyping(el) {
+  if (el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+async function startChat() {
+  await addMsg('bot', `👋 Hey there! I'm <b>Aria</b>, your GoSmart AI assistant.`, 500);
+
+  const t = showTyping();
+  await new Promise(r => setTimeout(r, 1200));
+  removeTyping(t);
+
+  const hasDrafts = draftBookings.length > 0;
+  if (autoBookedTrip) {
+    await addMsg('bot', `👋 Welcome back! Good news: I have a completed auto-booking confirmation waiting for your review.`);
+  } else if (hasDrafts) {
+    await addMsg('bot', `📍 Welcome back! I see you have <b>${draftBookings.length} saved draft${draftBookings.length > 1 ? 's' : ''}</b> from previous sessions. What would you like to do?`);
+  } else {
+    await addMsg('bot', `📍 I've detected you're in <b>Hyderabad</b>. Ready to plan your next adventure?`);
+  }
+
+  await new Promise(r => setTimeout(r, 400));
+
+  const choiceDiv = document.createElement('div');
+  choiceDiv.className = 'msg bot';
+
+  let contentHtml = `<div class="msg-bubble"><div class="init-choice-row" style="display:flex; flex-direction:column; gap:8px;">`;
+  
+  if (autoBookedTrip) {
+    contentHtml += `
+    <div class="init-choice-btn" onclick="showAutoBookedFlow()" style="background:rgba(74,222,128,0.08); border-color:rgba(74,222,128,0.25);">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="init-choice-icon" style="font-size:20px;">✅</div>
+        <div>
+          <div class="init-choice-label" style="font-size:14px; font-weight:700;">Auto-Booked</div>
+          <div class="init-choice-meta" style="font-size:11px; color:#4ade80; margin-top:2px;">1 trip successfully secured</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  contentHtml += `
+    <div class="init-choice-btn" onclick="showDraftsFlow()">
+      <div class="init-choice-icon">📋</div>
+      <div class="init-choice-label">Drafts</div>
+      <div class="init-choice-meta">${draftBookings.length} saved booking${draftBookings.length > 1 ? 's' : ''}</div>
+    </div>
+    <div class="init-choice-btn" onclick="showNewBookingFlow()">
+      <div class="init-choice-icon">✨</div>
+      <div class="init-choice-label">New Booking</div>
+      <div class="init-choice-meta">Plan a fresh trip</div>
+    </div>
+  </div></div>`;
+
+  choiceDiv.innerHTML = contentHtml;
+  chatMessages.appendChild(choiceDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// ===================== NEW BOOKING FLOW =====================
+let customTrip = { components: [], tags: ['Custom Plan'], price: 0, from: 'Hyderabad (HYD)' };
+
+async function showNewBookingFlow() {
+  addMsg('user', '✨ Start a new booking');
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    removeTyping(t);
+
+    await addMsg('bot', `Awesome! I can either **analyze your travel history to suggest fully completed itineraries**, or we can **build it step-by-step manually**.`);
+    
+    await new Promise(r => setTimeout(r, 400));
+    
+    const choiceDiv = document.createElement('div');
+    choiceDiv.className = 'msg bot';
+    choiceDiv.innerHTML = `<div class="msg-bubble">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button onclick="showAISuggestedFlow(this)" style="background:linear-gradient(135deg, var(--accent), var(--accent2));color:#fff;border:none;border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;width:100%;display:flex;align-items:center;gap:8px" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <span style="font-size:16px">✨</span> AI Suggested Itineraries
+        </button>
+        <button onclick="showManualBookingFlow(this)" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;width:100%;display:flex;align-items:center;gap:8px" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+          <span style="font-size:16px">🛠️</span> Manual Build (Step-by-Step)
+        </button>
+      </div>
+    </div>`;
+    chatMessages.appendChild(choiceDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 300);
+}
+
+// AI Branch
+async function showAISuggestedFlow(btnEl) {
+  if(btnEl) btnEl.parentNode.innerHTML = `<div style="font-size:13px; opacity:0.6; text-align:center;">Selected: AI Suggested</div>`;
+  addMsg('user', '✨ AI Suggested Itineraries');
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    removeTyping(t);
+
+    await addMsg('bot', `📍 Based on your travel history from <b>Hyderabad</b>, here are some routes I think you'd love again:`);
+
+    await new Promise(r => setTimeout(r, 400));
+
+    const cardsDiv = document.createElement('div');
+    cardsDiv.className = 'msg bot';
+    let cards = `<div class="msg-bubble"><div class="suggestion-cards">`;
+    mockTrips.forEach((trip, i) => {
+      cards += `
+        <div class="sug-card" onclick="selectTrip(${i})">
+          <div class="sug-icon">${trip.flag}</div>
+          <div class="sug-info">
+            <div class="sug-title">${trip.from} → ${trip.to}</div>
+            <div class="sug-meta">${trip.components.join(' · ')} · ${trip.tags.join(' · ')}</div>
+            <div class="sug-meta" style="margin-top:4px;color:rgba(255,255,255,.35)">${trip.date} · ${trip.popularity}</div>
+          </div>
+          <div class="sug-price">₹${trip.price.toLocaleString()}</div>
+        </div>`;
+    });
+    cards += `</div></div>`;
+    cardsDiv.innerHTML = cards;
+    chatMessages.appendChild(cardsDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 300);
+}
+
+// Manual Branch
+let manualServices = [];
+
+async function showManualBookingFlow(btnEl) {
+  if(btnEl) btnEl.parentNode.innerHTML = `<div style="font-size:13px; opacity:0.6; text-align:center;">Selected: Manual Build</div>`;
+  addMsg('user', '🛠️ Build it manually');
+  
+  // reset custom trip
+  customTrip = { components: [], tags: ['Custom Plan'], price: 0, from: 'Hyderabad (HYD)' };
+  manualServices = [];
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 700));
+    removeTyping(t);
+
+    const qDiv = document.createElement('div');
+    qDiv.className = 'msg bot';
+    qDiv.innerHTML = `<div class="msg-bubble">
+      Great! What services do you need for this trip? (Select multiple)
+      <div class="chip-row">
+        <div class="chip" onclick="this.classList.toggle('selected')">✈ Flight</div>
+        <div class="chip" onclick="this.classList.toggle('selected')">🚗 Car Rental</div>
+        <div class="chip" onclick="this.classList.toggle('selected')">🏨 Hotel</div>
+        <div class="chip" onclick="this.classList.toggle('selected')">🚄 Train</div>
+      </div>
+      <button onclick="confirmManualServices(this)" style="margin-top:12px;width:100%;padding:10px;border:none;border-radius:10px;background:#4ade80;color:#0f172a;font-weight:700;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;">
+        Continue →
+      </button>
+    </div>`;
+    chatMessages.appendChild(qDiv);
+  }, 300);
+}
+
+async function confirmManualServices(btnEl) {
+  const container = btnEl.parentNode;
+  const chips = container.querySelectorAll('.chip.selected');
+  if (chips.length === 0) return;
+
+  manualServices = Array.from(chips).map(c => {
+    const text = c.textContent.trim();
+    if(text.includes('Flight')) return 'Flight';
+    if(text.includes('Car')) return 'Car';
+    if(text.includes('Hotel')) return 'Hotel';
+    if(text.includes('Train')) return 'Train';
+    return text;
+  });
+
+  btnEl.style.display = 'none';
+  addMsg('user', `I need: ${manualServices.join(', ')}`);
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 600));
+    removeTyping(t);
+
+    const lDiv = document.createElement('div');
+    lDiv.className = 'msg bot';
+    lDiv.innerHTML = `<div class="msg-bubble">
+      Got it. Where are we heading?
+      <div class="chip-row">
+        <div class="chip" onclick="selectManualLocation('Mumbai (BOM)', this.parentNode)">Mumbai</div>
+        <div class="chip" onclick="selectManualLocation('Delhi (DEL)', this.parentNode)">Delhi</div>
+        <div class="chip" onclick="selectManualLocation('Goa (GOI)', this.parentNode)">Goa</div>
+        <div class="chip" onclick="selectManualLocation('Bangalore (BLR)', this.parentNode)">Bangalore</div>
+        <div class="chip" onclick="this.style.display='none'; document.getElementById('otherLocBox').style.display='flex';">Other</div>
+      </div>
+      <div id="otherLocBox" class="chat-input-box" style="display:none;">
+        <input type="text" id="otherLocInput" placeholder="Enter city name..." onkeypress="if(event.key==='Enter') selectManualLocation(this.value, this.parentNode.previousElementSibling)">
+        <button onclick="selectManualLocation(document.getElementById('otherLocInput').value, this.parentNode.previousElementSibling)">Save</button>
+      </div>
+    </div>`;
+    chatMessages.appendChild(lDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 300);
+}
+
+function selectManualLocation(loc, chipRowEl) {
+  if (!loc || !loc.trim()) return;
+  // disable further clicks visually
+  if(chipRowEl) chipRowEl.style.opacity = '0.5';
+  if(document.getElementById('otherLocBox')) document.getElementById('otherLocBox').style.display = 'none';
+
+  customTrip.to = loc.trim();
+  addMsg('user', `📍 ${customTrip.to}`);
+  
+  setTimeout(() => { triggerNextManualStep(); }, 400);
+}
+
+async function triggerNextManualStep() {
+  if (manualServices.includes('Flight') && !customTrip.flightDone) {
+    customTrip.flightDone = true;
+    askManualFlight();
+  } else if (manualServices.includes('Car') && !customTrip.carDone) {
+    customTrip.carDone = true;
+    askManualCar();
+  } else if (manualServices.includes('Hotel') && !customTrip.hotelDone) {
+    customTrip.hotelDone = true;
+    askManualHotel();
+  } else if (manualServices.includes('Train') && !customTrip.trainDone) {
+    customTrip.trainDone = true;
+    // Just mock selecting a train and move on
+    customTrip.components.push('🚄 Vande Bharat Express');
+    customTrip.price += 1500;
+    triggerNextManualStep();
+  } else {
+    finalizeManualBooking();
+  }
+}
+
+async function askManualFlight() {
+  const t = showTyping();
+  await new Promise(r => setTimeout(r, 800));
+  removeTyping(t);
+
+  await addMsg('bot', `Searching optimal flights for **HYD → ${customTrip.to}**...`);
+  await new Promise(r => setTimeout(r, 500));
+
+  const fDiv = document.createElement('div');
+  fDiv.className = 'msg bot';
+  fDiv.innerHTML = `<div class="msg-bubble">
+    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px;">Multiple flight options available:</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button onclick="confirmManualOption('✈ IndiGo 6E-204', 5800, '09:30 AM', this)" style="background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+          <span style="font-weight:700">💰 Cheapest</span> <span style="font-family:'Syne';font-weight:700;color:#4ade80">₹5,800</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">IndiGo 6E-204 · Lands at 09:30 AM</div>
+      </button>
+      <button onclick="confirmManualOption('✈ Vistara UK-872', 8400, '08:15 AM', this)" style="background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+          <span style="font-weight:700">⚡ Shortest / Direct</span> <span style="font-family:'Syne';font-weight:700;color:#4ade80">₹8,400</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">Vistara UK-872 · Lands at 08:15 AM</div>
+      </button>
+      <button onclick="confirmManualOption('✈ Air India AI-615', 7100, '11:45 AM', this)" style="background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+          <span style="font-weight:700">⭐ Most Preferred</span> <span style="font-family:'Syne';font-weight:700;color:#4ade80">₹7,100</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">Air India AI-615 · Lands at 11:45 AM</div>
+      </button>
+    </div>
+  </div>`;
+  chatMessages.appendChild(fDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function askManualCar() {
+  const t = showTyping();
+  await new Promise(r => setTimeout(r, 600));
+  removeTyping(t);
+
+  const arrTime = customTrip.arrivalTime || 'Morning';
+  await addMsg('bot', `Since you land around **${arrTime}**, here are some cars available right at the airport:`);
+  await new Promise(r => setTimeout(r, 400));
+
+  const cDiv = document.createElement('div');
+  cDiv.className = 'msg bot';
+  cDiv.innerHTML = `<div class="msg-bubble">
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button onclick="confirmManualOption('🚗 Zoomcar Sedan', 2100, null, this)" style="background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+          <span style="font-weight:700">Standard Sedan</span> <span style="font-family:'Syne';font-weight:700;color:#4ade80">₹2,100/day</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">Zoomcar · Honda City or similar</div>
+      </button>
+      <button onclick="confirmManualOption('🚗 Avis Premium SUV', 4500, null, this)" style="background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+          <span style="font-weight:700">Premium SUV</span> <span style="font-family:'Syne';font-weight:700;color:#4ade80">₹4,500/day</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">Avis · Toyota Fortuner or similar</div>
+      </button>
+    </div>
+  </div>`;
+  chatMessages.appendChild(cDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function askManualHotel() {
+  const t = showTyping();
+  await new Promise(r => setTimeout(r, 600));
+  removeTyping(t);
+
+  await addMsg('bot', `Finally, let's secure a highly-rated stay in **${customTrip.to}**:`);
+  await new Promise(r => setTimeout(r, 400));
+
+  const hDiv = document.createElement('div');
+  hDiv.className = 'msg bot';
+  hDiv.innerHTML = `<div class="msg-bubble">
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button onclick="confirmManualOption('🏨 Taj Mahal Palace', 18500, null, this)" style="background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+          <span style="font-weight:700">👑 Taj Mahal Palace</span> <span style="font-family:'Syne';font-weight:700;color:#4ade80">₹18,500/night</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">5-star luxury · Iconic stay</div>
+      </button>
+      <button onclick="confirmManualOption('🏨 Novotel', 8200, null, this)" style="background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .2s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+          <span style="font-weight:700">Novotel Premium</span> <span style="font-family:'Syne';font-weight:700;color:#4ade80">₹8,200/night</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">4-star comfort · Great connectivity</div>
+      </button>
+    </div>
+  </div>`;
+  chatMessages.appendChild(hDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function confirmManualOption(name, price, arrTime, btnEl) {
+  btnEl.parentNode.style.opacity = '0.5'; // dim choices
+  btnEl.parentNode.style.pointerEvents = 'none';
+
+  customTrip.components.push(name);
+  customTrip.price += price;
+  if(arrTime) customTrip.arrivalTime = arrTime;
+  
+  addMsg('user', `Selected: ${name.split('·')[0]}`);
+  
+  // If Flight was just selected, immediately ask for seat
+  if (name.includes('✈')) {
+    setTimeout(() => { askManualSeat(); }, 400);
+  } else {
+    setTimeout(() => { triggerNextManualStep(); }, 400);
+  }
+}
+
+async function askManualSeat() {
+  const t = showTyping();
+  await new Promise(r => setTimeout(r, 600));
+  removeTyping(t);
+  
+  const pSeat = getPreferredSeat();
+  if (pSeat) {
+    const sDiv = document.createElement('div');
+    sDiv.className = 'msg bot';
+    sDiv.innerHTML = `<div class="msg-bubble">
+      I noticed you prefer ${userPreferences.preferredType} seats on the ${userPreferences.preferredSide === 'A' ? 'left' : 'right'} side.<br><br>
+      Should I secure <b>${pSeat.id}</b> for you on this flight?
+      <div style="display:flex; gap:8px; margin-top:12px">
+        <button onclick="confirmManualFixedSeat('${pSeat.id}', ${pSeat.isPremium}, this)" style="flex:1; background:#4ade80; color:#0f172a; border:none; border-radius:8px; padding:8px; font-weight:600; cursor:pointer;">Yes, lock it in</button>
+        <button onclick="addMsg('user', 'I will choose later.'); setTimeout(() => { triggerNextManualStep(); }, 400); this.parentNode.parentNode.style.opacity='0.5'; this.parentNode.style.pointerEvents='none';" style="flex:1; background:rgba(255,255,255,.1); color:#fff; border:none; border-radius:8px; padding:8px; font-weight:600; cursor:pointer;">Choose later</button>
+      </div>
+    </div>`;
+    chatMessages.appendChild(sDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  } else {
+    triggerNextManualStep();
+  }
+}
+
+function confirmManualFixedSeat(seatId, isPremium, btnEl) {
+  btnEl.parentNode.parentNode.style.opacity = '0.5';
+  btnEl.parentNode.style.pointerEvents = 'none';
+  
+  const upgrade = isPremium ? 1200 : 0;
+  customTrip.price += upgrade;
+  customTrip.components.push(`💺 Seat ${seatId} ${isPremium ? '(Premium)' : ''}`);
+  
+  // Ensure the DOM elements reflect the choice for the final checkout sidebar
+  document.getElementById('chosenSeat').textContent = seatId;
+  document.getElementById('itinSeat').textContent = seatId;
+  document.getElementById('seatUpgradePrice').textContent = upgrade ? `₹${upgrade.toLocaleString()}` : '₹0';
+  document.getElementById('coSeatUpgrade').textContent = upgrade ? `₹${upgrade.toLocaleString()}` : '₹0';
+  
+  addMsg('user', `Yes, lock in ${seatId}`);
+  setTimeout(() => { triggerNextManualStep(); }, 400);
+}
+
+async function finalizeManualBooking() {
+  const t = showTyping();
+  await new Promise(r => setTimeout(r, 1000));
+  removeTyping(t);
+
+  // Set the global selectedTrip so seat formatting and checkout work out of the box
+  selectedTrip = {
+    ...customTrip,
+    flag: '📍',
+    date: 'Dec 12 - Dec 16',
+    popularity: 'Custom Built',
+    totalTime: 'Variable'
+  };
+
+  const cDiv = document.createElement('div');
+  cDiv.className = 'msg bot';
+  cDiv.innerHTML = `<div class="msg-bubble">
+    <div style="font-size:14px; font-weight:700; margin-bottom:8px">✨ Your Custom Trip is Ready!</div>
+    <div style="font-size:12px; color:rgba(255,255,255,.8); margin-bottom:12px">
+      ${selectedTrip.components.join('<br>')}
+      <div style="margin-top:8px; font-weight:700; font-family:'Syne',sans-serif; font-size:16px; color:#4ade80">Total: ₹${selectedTrip.price.toLocaleString()}</div>
+    </div>
+    
+    <button onclick="goToCheckoutFromManual()" style="width:100%;padding:12px;background:linear-gradient(135deg, var(--accent), var(--accent2));color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">
+      Continue to final Checkout →
+    </button>
+  </div>`;
+  chatMessages.appendChild(cDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function goToCheckoutFromManual() {
+  addMsg('user', 'Continue to Checkout');
+  
+  setTimeout(() => {
+    // Make sure global sidebar totals reflect custom trip logic
+    document.getElementById('grandTotal').textContent = `₹${selectedTrip.price.toLocaleString()}`;
+    document.getElementById('coTotal').textContent = `₹${selectedTrip.price.toLocaleString()}`;
+    
+    // Jump straight to the checkout page (skip modal, skip seat selection again)
+    document.getElementById('mainPage').classList.add('hidden');
+    document.getElementById('checkoutPage').classList.add('active');
+    document.body.classList.add('checkout-active');
+    window.scrollTo(0, 0);
+  }, 400);
+}
+
+// ===================== DRAFTS FLOW =====================
+async function showDraftsFlow() {
+  addMsg('user', '📋 View my drafts');
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    removeTyping(t);
+
+    await addMsg('bot', `Here are your saved draft bookings. Pick one to continue or review alternatives:`);
+
+    await new Promise(r => setTimeout(r, 400));
+
+    const draftsDiv = document.createElement('div');
+    draftsDiv.className = 'msg bot';
+    let html = `<div class="msg-bubble" style="padding:10px">`;
+    draftBookings.forEach((draft, i) => {
+      html += `
+        <div class="draft-card" onclick="openDraft('${draft.id}')">
+          <div class="draft-header">
+            <span class="draft-badge">${draft.status}</span>
+            <span class="draft-date">${draft.date}</span>
+          </div>
+          <div class="draft-route">${draft.flag} ${draft.from} → ${draft.to}</div>
+          <div class="draft-details">
+            ${draft.components.join(' · ')}<br>
+            📅 ${draft.travelDate} · ⏱ ${draft.totalTime} · 💺 Seat ${draft.seat}
+          </div>
+          <div class="draft-price">₹${draft.price.toLocaleString()}</div>
+        </div>`;
+    });
+    html += `</div>`;
+    draftsDiv.innerHTML = html;
+    chatMessages.appendChild(draftsDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 300);
+}
+
+// ===================== OPEN A DRAFT =====================
+async function openDraft(draftId) {
+  const draft = draftBookings.find(d => d.id === draftId);
+  if (!draft) return;
+  activeDraft = draft;
+
+  addMsg('user', `Open draft ${draft.flag} ${draft.route}`);
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 900));
+    removeTyping(t);
+
+    await addMsg('bot', `
+      📋 <b>Draft: ${draft.route}</b><br>
+      ${draft.components.map(c => '• ' + c).join('<br>')}<br><br>
+      📅 ${draft.travelDate} · ⏱ Total: ${draft.totalTime} · 💺 Seat ${draft.seat}<br>
+      💰 <b>₹${draft.price.toLocaleString()}</b>
+    `);
+
+    await new Promise(r => setTimeout(r, 600));
+    const t2 = showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    removeTyping(t2);
+
+    // Show alternatives
+    const alts = altItineraries[draftId];
+    if (!alts) {
+      await addMsg('bot', `No alternative itineraries found. Continue with this draft?`);
+      showDraftCheckoutButton(draft);
+      return;
+    }
+
+    await addMsg('bot', `🔍 I found <b>smarter alternatives</b> for you! Here are optimized options in 2 categories:`);
+    await new Promise(r => setTimeout(r, 400));
+
+    const altDiv = document.createElement('div');
+    altDiv.className = 'msg bot';
+    let altHtml = `<div class="msg-bubble" style="padding:10px">`;
+
+    // Faster options
+    if (alts.faster && alts.faster.length) {
+      altHtml += `<div class="alt-category">
+        <div class="alt-category-label faster">⚡ Less Travel Time</div>`;
+      alts.faster.forEach(alt => {
+        altHtml += `
+          <div class="alt-card" onclick="selectAlternative('${draftId}', '${alt.id}', 'faster')">
+            <div class="alt-card-icon">${alt.icon}</div>
+            <div class="alt-card-info">
+              <div class="alt-card-title">${alt.label}</div>
+              <div class="alt-card-meta">${alt.components.join(' · ')}</div>
+              <div class="alt-card-meta">⏱ ${alt.totalTime}</div>
+            </div>
+            <div class="alt-card-right">
+              <div class="alt-card-price">₹${alt.price.toLocaleString()}</div>
+              <div class="alt-card-savings time-save">⏱ −${alt.timeSaved}</div>
+            </div>
+          </div>`;
+      });
+      altHtml += `</div>`;
+    }
+
+    // Cheaper options
+    if (alts.cheaper && alts.cheaper.length) {
+      altHtml += `<div class="alt-category">
+        <div class="alt-category-label cheaper">💰 Cheaper Options</div>`;
+      alts.cheaper.forEach(alt => {
+        altHtml += `
+          <div class="alt-card" onclick="selectAlternative('${draftId}', '${alt.id}', 'cheaper')">
+            <div class="alt-card-icon">${alt.icon}</div>
+            <div class="alt-card-info">
+              <div class="alt-card-title">${alt.label}</div>
+              <div class="alt-card-meta">${alt.components.join(' · ')}</div>
+              <div class="alt-card-meta">⏱ ${alt.totalTime}</div>
+            </div>
+            <div class="alt-card-right">
+              <div class="alt-card-price">₹${alt.price.toLocaleString()}</div>
+              <div class="alt-card-savings price-save">💰 −₹${alt.priceSaved.toLocaleString()}</div>
+            </div>
+          </div>`;
+      });
+      altHtml += `</div>`;
+    }
+
+    altHtml += `</div>`;
+    altDiv.innerHTML = altHtml;
+    chatMessages.appendChild(altDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Also show "Continue with Draft" button
+    await new Promise(r => setTimeout(r, 300));
+    showDraftCheckoutButton(draft);
+  }, 300);
+}
+
+// Button to continue with draft directly or set a tracker
+function showDraftCheckoutButton(draft) {
+  const btnDiv = document.createElement('div');
+  btnDiv.className = 'msg bot';
+  btnDiv.innerHTML = `<div class="msg-bubble">
+    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px;text-align:center">What would you like to do next?</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button onclick="proceedWithDraft('${draft.id}')" style="background:var(--chat-accent);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;width:100%" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        📋 Continue with Draft → ₹${draft.price.toLocaleString()}
+      </button>
+      <button onclick="setupTracker('${draft.id}')" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;width:100%" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        📉 Not ready? Predict Price & Auto-Book
+      </button>
+    </div>
+  </div>`;
+  chatMessages.appendChild(btnDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// ===================== AUTO-BOOK TRACKER =====================
+function setupTracker(draftId) {
+  const draft = draftBookings.find(d => d.id === draftId);
+  if (!draft) return;
+  
+  addMsg('user', `📉 Predict Price & Auto-Book`);
+  
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 900));
+    removeTyping(t);
+
+    await addMsg('bot', `Smart move! Prices for **${draft.route}** usually fluctuate late Tuesday nights. Should I watch this and automatically book it for you if it hits your target price?`);
+    
+    await new Promise(r => setTimeout(r, 400));
+    const targetPrice = Math.floor(draft.price * 0.88); // mock an 12% drop target
+
+    const trackDiv = document.createElement('div');
+    trackDiv.className = 'msg bot';
+    trackDiv.innerHTML = `<div class="msg-bubble" style="padding:8px">
+      <div class="tracker-card">
+        <div class="tracker-header">
+          <div class="tracker-icon">📉</div>
+          <div>
+            <div class="tracker-title">Smart Price Tracker</div>
+            <div class="tracker-sub">Active scanning enabled for ${draft.route}</div>
+          </div>
+        </div>
+        
+        <div class="tracker-trend">
+          <div class="tracker-trend-col">
+            <label>Current</label>
+            <div class="tracker-trend-val">₹${draft.price.toLocaleString()}</div>
+          </div>
+          <div class="tracker-trend-col" style="text-align:right">
+            <label>Predicted Low</label>
+            <div class="tracker-trend-val diff">~₹${targetPrice.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <div class="tracker-slider-wrap">
+          <div class="tracker-slider-labels">
+            <span>Auto-Book Threshold: <span id="threshLabel_${draftId}">₹${targetPrice.toLocaleString()}</span></span>
+          </div>
+          <input type="range" class="tracker-slider" min="${Math.floor(draft.price * 0.75)}" max="${draft.price}" value="${targetPrice}" oninput="document.getElementById('threshLabel_${draftId}').textContent='₹'+Number(this.value).toLocaleString()">
+        </div>
+
+        <button class="tracker-btn" onclick="confirmTracker('${draftId}')">
+          🎯 Lock Target & Auto-Book
+        </button>
+      </div>
+    </div>`;
+    chatMessages.appendChild(trackDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 300);
+}
+
+function confirmTracker(draftId) {
+  const draft = draftBookings.find(d => d.id === draftId);
+  if(!draft) return;
+  const targetLabel = document.getElementById(`threshLabel_${draftId}`).textContent;
+  
+  addMsg('user', `🎯 Target locked at ${targetLabel}`);
+  
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 1000));
+    removeTyping(t);
+    
+    await addMsg('bot', `
+      ✅ **Target Locked!** I am now continuously scanning prices for **${draft.route}**.<br><br>
+      If the total price drops to **${targetLabel}** or below, I will instantly secure the reservation using your saved payment method and email you the confirmation.<br><br>
+      Relax, I've got this! 😎
+    `);
+
+    // Add a demo button for client presentations
+    setTimeout(() => {
+      const demoDiv = document.createElement('div');
+      demoDiv.className = 'msg bot';
+      demoDiv.innerHTML = `<div class="msg-bubble" style="background:transparent; padding:0; border:none; max-width:100%; text-align:center;">
+        <button onclick="simulatePriceDrop('${draftId}', '${targetLabel}')" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,.6);border:1px dashed rgba(255,255,255,.2);border-radius:10px;padding:8px 16px;font-size:11px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:10px;transition:all .2s;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.5)'" onmouseout="this.style.color='rgba(255,255,255,.6)';this.style.borderColor='rgba(255,255,255,.2)'">
+          ⏩ Simulate 48 Hours Later (Demo)
+        </button>
+      </div>`;
+      chatMessages.appendChild(demoDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 1000);
+    
+  }, 300);
+}
+
+// ===================== SIMULATE PRICE DROP (FOR DEMO) =====================
+function simulatePriceDrop(draftId, targetLabel) {
+  const draft = draftBookings.find(d => d.id === draftId);
+  if(!draft) return;
+  
+  // Clean up the targetLabel format (e.g. from String "₹26,840" back to Number to subtract a bit)
+  const targetNum = parseInt(targetLabel.replace(/[^\d]/g, ''), 10);
+  const actualDropPrice = targetNum - 340; 
+  
+  autoBookedTrip = {
+    draft: draft,
+    targetLabel: targetLabel,
+    actualDropPrice: actualDropPrice
+  };
+
+  addMsg('user', `*(Simulation: 48 Hours Later...)*`);
+  showAutoBookedCard(true);
+}
+
+async function showAutoBookedFlow() {
+  addMsg('user', `✅ View my Auto-Booked itinerary`);
+  showAutoBookedCard(false);
+}
+
+function showAutoBookedCard(isDemoAlert = true) {
+  if(!autoBookedTrip) return;
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 1500));
+    removeTyping(t);
+
+    const titleMsg = isDemoAlert ? 'PRICE DROP AUTO-BOOKED' : 'CONFIRMED AUTO-BOOKING';
+    const introMsg = isDemoAlert ? 
+      `Great news! The price for <b>${autoBookedTrip.draft.route}</b> dropped below your target.` :
+      `Here are the details of the booking I secured for you when the price dropped.`;
+
+    const alertHtml = `
+      <div class="msg-bubble" style="border:1px solid rgba(74,222,128,0.3); background:linear-gradient(135deg, rgba(74,222,128,0.08), rgba(0,0,0,0)); animation: fadeUp .4s ease both;">
+        <div style="font-size:16px; font-weight:800; color:#4ade80; font-family:'Syne',sans-serif; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:rgba(74,222,128,0.2);border-radius:6px;font-size:12px;">✅</span> ${titleMsg}
+        </div>
+        <div style="font-size:13px; line-height:1.5; color:rgba(255,255,255,.9);">
+          ${introMsg} <br><br>
+          <div style="display:flex; justify-content:space-between; background:rgba(0,0,0,.2); padding:10px; border-radius:8px; margin: 10px 0;">
+            <div>
+              <div style="font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase;">Your Target</div>
+              <div style="font-size:14px; font-weight:700;">${autoBookedTrip.targetLabel}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase;">Locked Price</div>
+              <div style="font-size:14px; font-weight:700; color:#4ade80;">₹${autoBookedTrip.actualDropPrice.toLocaleString()}</div>
+            </div>
+          </div>
+          As instructed, I have <b>automatically secured this booking</b> using your saved HDFC Infinia card (ending in 4021).<br><br>
+          Your itinerary and invoices have been emailed to you.
+        </div>
+        <button onclick="downloadItinerary()" style="margin-top:16px; background:#4ade80; color:#0f172a; border:none; border-radius:10px; padding:10px 20px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:13px; cursor:pointer; transition:all .2s; width:100%;">
+          📥 Download Confirmed Itinerary
+        </button>
+      </div>
+    `;
+
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'msg bot';
+    alertDiv.innerHTML = alertHtml;
+    chatMessages.appendChild(alertDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  }, 600);
+}
+
+
+// ===================== SELECT ALTERNATIVE =====================
+function selectAlternative(draftId, altId, category) {
+  const draft = draftBookings.find(d => d.id === draftId);
+  const alts = altItineraries[draftId];
+  const pool = category === 'faster' ? alts.faster : alts.cheaper;
+  const alt = pool.find(a => a.id === altId);
+  if (!draft || !alt) return;
+
+  addMsg('user', `${alt.icon} Select "${alt.label}"`);
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 1000));
+    removeTyping(t);
+
+    // Build comparison card
+    const priceDiff = draft.price - alt.price;
+    const isCheaper = priceDiff > 0;
+    const isFaster = category === 'faster';
+
+    let savingsText = '';
+    let savingsSub = '';
+    if (isFaster) {
+      savingsText = `⏱ ${alt.timeSaved} faster`;
+      savingsSub = alt.priceDiff > 0 ? `+₹${alt.priceDiff.toLocaleString()} extra` : `Same price`;
+    } else {
+      savingsText = `💰 ₹${alt.priceSaved.toLocaleString()} saved`;
+      savingsSub = `${alt.timeDiff} extra travel time`;
+    }
+
+    await addMsg('bot', `📊 Here's how your selected option compares to the original draft:`);
+    await new Promise(r => setTimeout(r, 400));
+
+    const cmpDiv = document.createElement('div');
+    cmpDiv.className = 'msg bot';
+    cmpDiv.innerHTML = `<div class="msg-bubble" style="padding:8px">
+      <div class="compare-card">
+        <div class="compare-title">📊 Comparison · ${draft.route}</div>
+        <div class="compare-grid">
+          <div class="compare-col">
+            <div class="compare-col-label old">📋 Original Draft</div>
+            ${draft.components.map(c => `<div class="compare-item"><span>${c}</span></div>`).join('')}
+            <div class="compare-item"><span>⏱ ${draft.totalTime}</span></div>
+            <div class="compare-total old">₹${draft.price.toLocaleString()}</div>
+          </div>
+          <div class="compare-vs">VS</div>
+          <div class="compare-col">
+            <div class="compare-col-label new">✨ ${alt.label}</div>
+            ${alt.components.map(c => `<div class="compare-item"><span>${c}</span></div>`).join('')}
+            <div class="compare-item"><span>⏱ ${alt.totalTime}</span></div>
+            <div class="compare-total new-val">₹${alt.price.toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="compare-savings-banner">
+          <div class="compare-savings-big">${savingsText}</div>
+          <div class="compare-savings-sub">${savingsSub}</div>
+        </div>
+      </div>
+    </div>`;
+    chatMessages.appendChild(cmpDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    await new Promise(r => setTimeout(r, 500));
+
+    // Proceed to checkout button
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'msg bot';
+    btnDiv.innerHTML = `<div class="msg-bubble">
+      <button onclick="proceedWithAlternative('${draftId}','${altId}','${category}')" style="background:var(--success);color:#fff;border:none;border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;width:100%" onmouseover="this.style.background='#17b169'" onmouseout="this.style.background='var(--success)'">
+        ✓ Proceed to Checkout with ${alt.label} →
+      </button>
+    </div>`;
+    chatMessages.appendChild(btnDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 300);
+}
+
+// ===================== PROCEED TO CHECKOUT =====================
+function proceedWithDraft(draftId) {
+  const draft = draftBookings.find(d => d.id === draftId);
+  if (!draft) return;
+
+  selectedSeat = draft.seat;
+  document.getElementById('chosenSeat').textContent = draft.seat;
+  document.getElementById('itinSeat').textContent = draft.seat;
+  document.getElementById('coTotal').textContent = `₹${draft.price.toLocaleString()}`;
+
+  addMsg('user', `📋 Continue with draft → checkout`);
+  setTimeout(() => {
+    addMsg('bot', `✅ Taking you to checkout with your saved draft. All your details are preserved!`);
+    setTimeout(() => {
+      document.getElementById('mainPage').classList.add('hidden');
+      document.getElementById('checkoutPage').classList.add('active');
+      document.body.classList.add('checkout-active');
+      window.scrollTo(0, 0);
+    }, 800);
+  }, 300);
+}
+
+function proceedWithAlternative(draftId, altId, category) {
+  const alts = altItineraries[draftId];
+  const pool = category === 'faster' ? alts.faster : alts.cheaper;
+  const alt = pool.find(a => a.id === altId);
+  if (!alt) return;
+
+  document.getElementById('coTotal').textContent = `₹${alt.price.toLocaleString()}`;
+
+  addMsg('user', `✓ Proceed with ${alt.label}`);
+  setTimeout(() => {
+    addMsg('bot', `🎉 Great choice! Taking you to checkout with the <b>${alt.label}</b> itinerary!`);
+    setTimeout(() => {
+      document.getElementById('mainPage').classList.add('hidden');
+      document.getElementById('checkoutPage').classList.add('active');
+      document.body.classList.add('checkout-active');
+      window.scrollTo(0, 0);
+    }, 800);
+  }, 300);
+}
+
+// ===================== DOWNLOAD ITINERARY =====================
+function downloadItinerary() {
+  const seat = document.getElementById('itinSeat')?.textContent || '—';
+  const total = document.getElementById('coTotal')?.textContent || '₹30,500';
+  const content = `
+══════════════════════════════════════
+        GoSmart Travel Itinerary
+        Booking ID: GS-2024-98321
+══════════════════════════════════════
+
+PASSENGER: Kalyan
+EMAIL:     kalyan@email.com
+PHONE:     +91 98765 43210
+
+──────────────────────────────────────
+ITINERARY
+──────────────────────────────────────
+
+✈  FLIGHT
+   IndiGo 6E-204 · HYD → BOM
+   Apr 12, 2026 · 06:30 → 08:25
+   Seat: ${seat} · Economy
+   Status: Confirmed
+
+🚄 TRAIN
+   Deccan Queen · BOM → Pune
+   Apr 12, 2026 · 17:10 → 20:40
+   Class: 1AC
+   Status: Confirmed
+
+🏨 HOTEL
+   The Taj Mahal Palace, Mumbai
+   Apr 12–14 · Deluxe Sea View · 2 nights
+   Status: Confirmed
+
+🚗 CAR RENTAL
+   Hertz Economy · Mumbai Airport
+   Apr 12–15 · Toyota Etios or similar · 3 days
+   Status: Confirmed
+
+──────────────────────────────────────
+TOTAL: ${total}
+──────────────────────────────────────
+
+🔒 Secured by GoSmart · gosmart.travel
+  `.trim();
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'GoSmart_Itinerary_GS-2024-98321.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function selectTrip(idx) {
+  selectedTrip = mockTrips[idx];
+  const trip = selectedTrip;
+
+  // Fill search fields
+  document.getElementById('fromField').value = trip.from;
+  document.getElementById('toField').value = trip.to;
+
+  // Set dates
+  const d = new Date();
+  d.setDate(d.getDate() + 14);
+  document.getElementById('departDate').value = d.toISOString().split('T')[0];
+  d.setDate(d.getDate() + (trip.tags[1]?.replace(' nights','') || 2) * 1);
+  document.getElementById('returnDate').value = d.toISOString().split('T')[0];
+
+  addMsg('user', `Book ${trip.flag} ${trip.to} trip like ${trip.date}`);
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 1000));
+    removeTyping(t);
+
+    await addMsg('bot', `
+      ✅ Great choice! Replicating your <b>${trip.to}</b> trip from ${trip.date}.<br><br>
+      <b>Package includes:</b><br>
+      ${trip.components.map(c => `• ${c}`).join('<br>')}
+    `);
+
+    await new Promise(r => setTimeout(r, 600));
+
+    // Show preferred seat recommendation
+    const prefSeat = getPreferredSeat();
+    const t2 = showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    removeTyping(t2);
+
+    if (prefSeat) {
+      const seatTypeLabel = prefSeat.isPremium ? 'Premium Window' : 'Window Seat';
+      const historyStr = userPreferences.history.slice(0, 3).join(', ');
+
+      await addMsg('bot', `💺 Since your trip includes a flight, I checked seat availability for you based on your past preferences…`);
+
+      await new Promise(r => setTimeout(r, 400));
+
+      const prefDiv = document.createElement('div');
+      prefDiv.className = 'msg bot';
+      prefDiv.innerHTML = `<div class="msg-bubble" style="padding:8px">
+        <div class="pref-seat-card">
+          <div class="pref-seat-header">
+            <div class="pref-seat-icon">🎯</div>
+            <div>
+              <div class="pref-seat-title">Your Preferred Seat is Available!</div>
+              <div class="pref-seat-sub">Based on your last ${userPreferences.history.length} flights (${historyStr}…)</div>
+            </div>
+          </div>
+          <div class="pref-seat-body">
+            <div class="pref-seat-visual">${prefSeat.id}</div>
+            <div class="pref-seat-details">
+              <div class="pref-seat-name">Seat ${prefSeat.id} · Row ${prefSeat.row} · ${seatTypeLabel}</div>
+              <div class="pref-seat-meta">
+                ${prefSeat.isPremium ? '⭐ Premium row · Extra legroom · Priority boarding<br>' : ''}
+                🪟 Left window · Mid-cabin · Low noise zone
+              </div>
+              <span class="pref-seat-tag">✓ Available Now</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,.65);margin-bottom:10px;text-align:center">
+            Shall I proceed with this seat to checkout?
+          </div>
+          <div class="pref-action-row">
+            <button class="pref-btn pref-btn-yes" onclick="acceptPreferredSeat('${prefSeat.id}', ${prefSeat.isPremium})">
+              ✓ Yes, Book This Seat
+            </button>
+            <button class="pref-btn pref-btn-no" onclick="declinePreferredSeat()">
+              ✗ No, Choose Myself
+            </button>
+          </div>
+        </div>
+      </div>`;
+      chatMessages.appendChild(prefDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    } else {
+      // No preferred seat available, fall back to seat picker
+      await addMsg('bot', `Since your trip includes a flight, let me help you <b>pick your preferred seat</b> first. 💺`);
+      showChooseSeatButton();
+    }
+  }, 300);
+}
+
+// Accepted the preferred seat → auto-select it and go straight to checkout
+function acceptPreferredSeat(seatId, isPremium) {
+  selectedSeat = seatId;
+  seatIsPremium = isPremium;
+
+  // Update pricing
+  const upgrade = isPremium ? 1200 : 0;
+  const total = 30500 + upgrade;
+  document.getElementById('seatUpgradePrice').textContent = upgrade ? `₹${upgrade.toLocaleString()}` : '₹0';
+  document.getElementById('grandTotal').textContent = `₹${total.toLocaleString()}`;
+  document.getElementById('coSeatUpgrade').textContent = upgrade ? `₹${upgrade.toLocaleString()}` : '₹0';
+  document.getElementById('coTotal').textContent = `₹${total.toLocaleString()}`;
+  document.getElementById('chosenSeat').textContent = seatId;
+  document.getElementById('itinSeat').textContent = seatId;
+
+  addMsg('user', `Yes, book seat ${seatId}! ✓`);
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    removeTyping(t);
+
+    await addMsg('bot', `
+      🎉 Perfect! Seat <b>${seatId}</b> is locked in for you!${isPremium ? ' ⭐ Premium upgrade added (+₹1,200).' : ''}<br><br>
+      Taking you straight to checkout…
+    `);
+
+    await new Promise(r => setTimeout(r, 600));
+
+    // Skip seat modal & booking modal, go directly to checkout
+    document.getElementById('mainPage').classList.add('hidden');
+    document.getElementById('checkoutPage').classList.add('active');
+    document.body.classList.add('checkout-active');
+    window.scrollTo(0, 0);
+  }, 300);
+}
+
+// Declined the preferred seat → show the choose seat button
+function declinePreferredSeat() {
+  addMsg('user', `No, I'll choose my own seat`);
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 600));
+    removeTyping(t);
+
+    await addMsg('bot', `No problem! Let me open the seat map for you. Pick any seat you like 👇`);
+
+    await new Promise(r => setTimeout(r, 300));
+    showChooseSeatButton();
+  }, 300);
+}
+
+// Helper to show the "Choose Your Seat" CTA
+function showChooseSeatButton() {
+  const btnDiv = document.createElement('div');
+  btnDiv.className = 'msg bot';
+  btnDiv.innerHTML = `<div class="msg-bubble">
+    <button onclick="openSeatModal()" style="background:var(--chat-accent);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;width:100%;margin-top:4px" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      🪑 Choose Your Seat →
+    </button>
+  </div>`;
+  chatMessages.appendChild(btnDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function sendUserMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMsg('user', text);
+
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 900));
+    removeTyping(t);
+    addMsg('bot', `I found that! Based on your preferences from past trips, I'd suggest the <b>Mumbai business package</b> – great for quick trips with comfort. Want me to book it? 🤝`);
+  }, 300);
+}
+
+// ===================== SEAT MAP =====================
+const seatConfig = {
+  rows: 28,
+  cols: ['A','B','C','D','E','F'],
+  occupied: [
+    '1A','1C','2B','2F','3A','3D','4E','5C','5F','6A','6B',
+    '7D','7E','8A','9C','10B','10F','11A','11D','12C','12E',
+    '14B','14F','15A','16D','17C','18A','18E','20B','20F',
+    '22A','22D','23B','24F','25C','26A','26E','27B','28C','28D'
+  ],
+  premium: ['1','2','3','4','5','6']  // first 6 rows
+};
+
+function buildSeatMap() {
+  const container = document.getElementById('seatMapContainer');
+  container.innerHTML = '';
+
+  // Business class label
+  const bizLabel = document.createElement('div');
+  bizLabel.className = 'cabin-label';
+  bizLabel.textContent = '⭐ Premium Economy (Rows 1–6)';
+  container.appendChild(bizLabel);
+
+  const plane = document.createElement('div');
+  plane.className = 'plane-body';
+
+  for (let r = 1; r <= seatConfig.rows; r++) {
+    if (r === 7) {
+      plane.appendChild(Object.assign(document.createElement('div'), { className: 'cabin-label', textContent: '💺 Economy Class (Rows 7–28)', style: 'margin: 16px 0 12px' }));
+    }
+
+    const row = document.createElement('div');
+    row.className = 'seat-row';
+
+    const rnum = document.createElement('div');
+    rnum.className = 'row-num';
+    rnum.textContent = r;
+    row.appendChild(rnum);
+
+    seatConfig.cols.forEach((col, ci) => {
+      if (ci === 3) {
+        const aisle = document.createElement('div');
+        aisle.className = 'aisle';
+        row.appendChild(aisle);
+      }
+      const seatId = `${r}${col}`;
+      const seat = document.createElement('div');
+      seat.className = 'seat';
+      seat.id = `seat-${seatId}`;
+      seat.textContent = col;
+
+      if (seatConfig.occupied.includes(seatId)) {
+        seat.classList.add('occupied');
+      } else if (seatConfig.premium.includes(String(r))) {
+        seat.classList.add('premium');
+        seat.title = `Row ${r}${col} – Premium (+₹1,200)`;
+        seat.onclick = () => selectSeat(seatId, true);
+      } else {
+        seat.classList.add('available');
+        seat.title = `Row ${r}${col}`;
+        seat.onclick = () => selectSeat(seatId, false);
+      }
+      row.appendChild(seat);
+    });
+    plane.appendChild(row);
+  }
+  container.appendChild(plane);
+}
+
+function selectSeat(seatId, isPremium) {
+  // Clear previous selection
+  document.querySelectorAll('.seat.selected').forEach(s => {
+    s.classList.remove('selected');
+    if (isPremium || seatConfig.premium.includes(seatId.replace(/[A-F]/g,''))) {
+      s.classList.add('premium');
+    } else {
+      s.classList.add('available');
+    }
+  });
+
+  const el = document.getElementById(`seat-${seatId}`);
+  if (el) {
+    el.classList.remove('available','premium');
+    el.classList.add('selected');
+  }
+
+  selectedSeat = seatId;
+  seatIsPremium = isPremium;
+  document.getElementById('seatSelectedLabel').textContent = `Selected: Seat ${seatId}${isPremium ? ' · Premium (+₹1,200)' : ''}`;
+}
+
+function openSeatModal() {
+  buildSeatMap();
+  document.getElementById('seatModal').classList.add('open');
+}
+
+function closeSeatModal() {
+  document.getElementById('seatModal').classList.remove('open');
+}
+
+function confirmSeat() {
+  if (!selectedSeat) {
+    alert('Please select a seat first.');
+    return;
+  }
+  closeSeatModal();
+
+  // Update prices
+  const upgrade = seatIsPremium ? 1200 : 0;
+  const total = 30500 + upgrade;
+  document.getElementById('seatUpgradePrice').textContent = upgrade ? `₹${upgrade.toLocaleString()}` : '₹0';
+  document.getElementById('grandTotal').textContent = `₹${total.toLocaleString()}`;
+  document.getElementById('coSeatUpgrade').textContent = upgrade ? `₹${upgrade.toLocaleString()}` : '₹0';
+  document.getElementById('coTotal').textContent = `₹${total.toLocaleString()}`;
+  document.getElementById('chosenSeat').textContent = selectedSeat;
+  document.getElementById('itinSeat').textContent = selectedSeat;
+
+  // Chat confirmation
+  setTimeout(async () => {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 700));
+    removeTyping(t);
+    addMsg('bot', `🎉 Seat <b>${selectedSeat}</b> selected! ${seatIsPremium ? '⭐ Premium upgrade added (+₹1,200).' : ''}<br><br>Your complete trip package is ready. Here's the summary with total pricing:`);
+
+    await new Promise(r => setTimeout(r, 500));
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'msg bot';
+    btnDiv.innerHTML = `<div class="msg-bubble">
+      <button onclick="openBookingModal()" style="background:var(--chat-accent);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;width:100%;transition:all .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        📋 View Full Summary & Proceed →
+      </button>
+    </div>`;
+    chatMessages.appendChild(btnDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 200);
+}
+
+function openBookingModal() {
+  document.getElementById('bookingModal').classList.add('open');
+}
+
+function closeBookingModal() {
+  document.getElementById('bookingModal').classList.remove('open');
+}
+
+function goToCheckout() {
+  closeBookingModal();
+  document.getElementById('mainPage').classList.add('hidden');
+  document.getElementById('checkoutPage').classList.add('active');
+  document.body.classList.add('checkout-active');
+  window.scrollTo(0, 0);
+}
+
+function confirmPayment() {
+  document.getElementById('successOverlay').classList.add('show');
+}
+
+function resetApp() {
+  document.getElementById('successOverlay').classList.remove('show');
+  document.getElementById('checkoutPage').classList.remove('active');
+  document.getElementById('mainPage').classList.remove('hidden');
+  document.body.classList.remove('checkout-active');
+  selectedSeat = null;
+  selectedTrip = null;
+  chatMessages.innerHTML = '';
+  chatStep = 0;
+  startChat();
+  window.scrollTo(0, 0);
+}
+
+// ===================== SEARCH TABS =====================
+function switchTab(el) {
+  document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function swapCities() {
+  const f = document.getElementById('fromField');
+  const t = document.getElementById('toField');
+  [f.value, t.value] = [t.value, f.value];
+}
+
+// ===================== TOGGLE CHAT =====================
+function toggleChat() {
+  const panel = document.getElementById('chatPanel');
+  const fab = document.getElementById('chatFab');
+  chatOpen = !chatOpen;
+  if (chatOpen) {
+    panel.style.display = 'flex';
+    fab.style.display = 'none';
+  } else {
+    panel.style.display = 'none';
+    fab.style.display = 'flex';
+  }
+}
+
+// ===================== INIT =====================
+// Set default dates
+const today = new Date();
+const dep = new Date(today); dep.setDate(dep.getDate() + 14);
+const ret = new Date(today); ret.setDate(ret.getDate() + 17);
+document.getElementById('departDate').value = dep.toISOString().split('T')[0];
+document.getElementById('returnDate').value = ret.toISOString().split('T')[0];
+
+// Dismiss modals on overlay click
+document.getElementById('seatModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('seatModal')) closeSeatModal();
+});
+document.getElementById('bookingModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('bookingModal')) closeBookingModal();
+});
+
+// Auto-scroll chat when new content is added
+function autoScrollChat() {
+  requestAnimationFrame(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight + 9999;
+  });
+  // Fallback for delayed renders (images, complex cards)
+  setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight + 9999; }, 50);
+  setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight + 9999; }, 200);
+}
+const chatAutoScroll = new MutationObserver(autoScrollChat);
+chatAutoScroll.observe(chatMessages, { childList: true, subtree: true, characterData: true });
+
+// Start AI chat
+startChat();
+</script>
+</body>
+</html>
